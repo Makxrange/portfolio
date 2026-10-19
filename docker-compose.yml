@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # 1. Наше Python-приложение
+  app:
+    build: .                # Собрать образ из текущей папки (где лежит Dockerfile)
+    expose:
+      - "5000"              # Открываем порт 5000 ТОЛЬКО для других контейнеров внутри сети
+
+  # 2. Наш веб-сервер Nginx
+  nginx:
+    image: nginx:alpine     # Берем легкий официальный образ Nginx
+    ports:
+      - "80:80"             # Пробрасываем порт 80 нашего Мака на порт 80 внутри Nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro # Подменяем конфиг Nginx на наш (ro = read only)
+    depends_on:
+      - app                 # Ждем, пока запустится сервис "app", прежде чем стартовать
